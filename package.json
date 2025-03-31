@@ -1,7 +1,18 @@
 {
-  "name": "webpack-template",
+  "name": "odin-battleship",
   "version": "1.0.0",
-  "description": "",
+  "description": "Initialize using: \"npm init\", \"npm install\". Re-initialize eslint and jest using \"npm init @eslint/config@latest\", \"npm init jest@latest\".",
+  "keywords": [],
+  "homepage": "https://github.com/AndrewHeckman/odin-battleship#readme",
+  "bugs": {
+    "url": "https://github.com/AndrewHeckman/odin-battleship/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndrewHeckman/odin-battleship.git"
+  },
+  "license": "ISC",
+  "author": "",
   "main": "index.js",
   "scripts": {
     "build": "webpack --config webpack.prod.js",
@@ -9,9 +20,6 @@
     "deploy": "gh-pages -d dist",
     "test": "jest"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.26.10",
     "@babel/preset-env": "^7.26.9",
