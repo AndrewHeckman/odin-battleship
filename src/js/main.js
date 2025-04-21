@@ -1,3 +1,6 @@
 import "../css/main.css";
+import Game from "./game";
 
-console.log("Hello, Webpack!");
+document.addEventListener("DOMContentLoaded", () => {
+  new Game();
+});

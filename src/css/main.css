@@ -23,6 +23,7 @@
   --hit-color: #ff0000;
   --miss-color: #0000ff;
   --ship-color: #00ff00;
+  --ship-placing-color: #ffff00;
 }
 
 .flex {
@@ -33,6 +34,10 @@
   flex-direction: column;
 }
 
+.hide {
+  display: none !important;
+}
+
 .hit {
   background-color: var(--hit-color);
 }
@@ -41,7 +46,15 @@
   background-color: var(--miss-color);
 }
 
-.ship {
+.selected {
+  background-color: var(--ship-placing-color);
+}
+
+.ship-placing {
+  background-color: var(--ship-placing-color);
+}
+
+.ship-placed {
   background-color: var(--ship-color);
 }
 
@@ -64,10 +77,31 @@ h1 {
   display: grid;
   grid-template-columns: repeat(10, var(--cell-size));
   grid-template-rows: repeat(10, var(--cell-size));
+  margin: auto;
+  border: 1px solid #000;
 }
 
 .cell {
   width: var(--cell-size);
   height: var(--cell-size);
   border: 1px solid #000;
+}
+
+#ships {
+  width: calc(10 * var(--cell-size));
+  margin: 0 auto;
+  justify-content: flex-start;
+  gap: calc(var(--cell-size) / 2);
+}
+
+.ship {
+  height: var(--cell-size);
+  border: 1px solid #000;
+}
+
+#buttons {
+  width: calc(100vw * 2 / 3);
+  margin: auto auto;
+  justify-content: center;
+  gap: calc(var(--cell-size) / 2);
 }
