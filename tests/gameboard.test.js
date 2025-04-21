@@ -86,13 +86,13 @@ describe("Gameboard", () => {
     test("should mark a cell as hit when a ship is hit", () => {
       const result = gameboard.receiveAttack(0, 0);
       expect(checkAttacks(gameboard.board, [{ x: 0, y: 0 }])).toBe(true);
-      expect(result).toBe(true);
+      expect(result).toBe("hit");
     });
 
     test("should mark a cell as hit when a miss occurs", () => {
       const result = gameboard.receiveAttack(5, 5);
       expect(checkAttacks(gameboard.board, [{ x: 5, y: 5 }])).toBe(true);
-      expect(result).toBe(false);
+      expect(result).toBe("miss");
     });
 
     test("should throw an error when the attack is out of bounds", () => {

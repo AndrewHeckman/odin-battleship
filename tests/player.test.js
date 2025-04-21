@@ -20,12 +20,12 @@ describe("Player", () => {
   });
 
   describe("receiveAttack", () => {
-    test("should return true when attack hits a ship", () => {
-      expect(player.receiveAttack(0, 0)).toBe(true);
+    test("should return \"hit\" when attack hits a ship", () => {
+      expect(player.receiveAttack(0, 0)).toBe("hit");
     });
 
-    test("should return false when attack misses", () => {
-      expect(player.receiveAttack(5, 5)).toBe(false);
+    test("should return \"miss\" when attack misses", () => {
+      expect(player.receiveAttack(5, 5)).toBe("miss");
     });
   });
 

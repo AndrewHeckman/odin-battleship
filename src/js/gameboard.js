@@ -72,7 +72,7 @@ export default class Gameboard {
    * Receive an attack at the specified coordinates.
    * @param {number} x The x-coordinate of the attack.
    * @param {number} y The y-coordinate of the attack.
-   * @returns {Boolean} True if the attack hits a ship, false if it misses.
+   * @returns {String} "hit", "miss", or the sunk ship's index.
    * @throws {Error} If the attack is out of bounds or has already been taken.
    */
   receiveAttack(x, y) {
@@ -90,9 +90,13 @@ export default class Gameboard {
     if (cell.ship !== null) {
       let ship = this.#ships[cell.ship];
       ship.hit();
-      return true;
+      if (ship.isSunk()) {
+        return cell.ship.toString();
+      } else {
+        return "hit";
+      }
     } else {
-      return false;
+      return "miss";
     }
   }
 

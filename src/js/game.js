@@ -3,15 +3,15 @@ import AI from "./ai";
 
 export default class Game {
   #fleet = [
-    { id: 0, name: "Carrier", length: 5},
-    { id: 1, name: "Battleship", length: 4},
-    { id: 2, name: "Destroyer", length: 3},
-    { id: 3, name: "Submarine", length: 3},
-    { id: 4, name: "Patrol Boat", length: 2}
+    { id: 0, name: "Carrier", length: 5 },
+    { id: 1, name: "Battleship", length: 4 },
+    { id: 2, name: "Destroyer", length: 3 },
+    { id: 3, name: "Submarine", length: 3 },
+    { id: 4, name: "Patrol Boat", length: 2 },
   ];
-  #ai = new AI();
+  #ai = new AI(this.#fleet);
   #player;
-  #computer = new Player("Computer", this.#ai.placeShips(this.#fleet));
+  #computer = new Player("Computer", this.#ai.placeShips());
   #attackedCell;
   #playerBoard;
   #playerCells = [];
@@ -40,9 +40,15 @@ export default class Game {
     this.#attackButton = document.querySelector("#attack");
 
     this.#placeButton.addEventListener("click", this.#onPlaceClick.bind(this));
-    this.#rotateButton.addEventListener("click", this.#onRotateClick.bind(this));
+    this.#rotateButton.addEventListener(
+      "click",
+      this.#onRotateClick.bind(this),
+    );
     this.#startButton.addEventListener("click", this.#onStartClick.bind(this));
-    this.#attackButton.addEventListener("click", this.#onAttackClick.bind(this));
+    this.#attackButton.addEventListener(
+      "click",
+      this.#onAttackClick.bind(this),
+    );
 
     this.#placeButton.disabled = true;
     this.#rotateButton.disabled = true;
@@ -69,7 +75,7 @@ export default class Game {
     }
 
     // generate ships div
-    this.#fleet.forEach(ship => {
+    this.#fleet.forEach((ship) => {
       const shipElement = document.createElement("div");
       shipElement.id = `ship-${ship.id}`;
       shipElement.classList.add("ship");
@@ -93,13 +99,13 @@ export default class Game {
         this.#selectedShipPlacement = null;
       }
     }
-      
+
     // select the clicked ship
     this.#selectedShip = event.target.dataset.ship;
     event.target.classList.add("selected");
 
     // enable cell click event by adding event listener to each cell
-    this.#playerCells.forEach(cell => {
+    this.#playerCells.forEach((cell) => {
       if (!cell.classList.contains("ship-placed")) {
         const listener = this.#onCellPlaceClick.bind(this);
         this.#playerCellListeners.set(cell, listener);
@@ -113,9 +119,11 @@ export default class Game {
     const x = cell % 10;
     const y = Math.floor(cell / 10);
     const length = this.#fleet[this.#selectedShip].length;
-    const isVertical = this.#selectedShipPlacement ? this.#selectedShipPlacement.isVertical : false;
+    const isVertical = this.#selectedShipPlacement
+      ? this.#selectedShipPlacement.isVertical
+      : false;
 
-    if (isVertical && y + length > 10 || !isVertical && x + length > 10) {
+    if ((isVertical && y + length > 10) || (!isVertical && x + length > 10)) {
       return;
     }
 
@@ -127,11 +135,11 @@ export default class Game {
       x,
       y,
       isVertical,
-      length
+      length,
     };
-    
+
     this.#highlightShipPlacing();
-    
+
     this.#placeButton.disabled = false;
     this.#rotateButton.disabled = false;
   }
@@ -139,7 +147,8 @@ export default class Game {
   #onRotateClick() {
     this.#clearShipPlacing();
 
-    this.#selectedShipPlacement.isVertical = !this.#selectedShipPlacement.isVertical;
+    this.#selectedShipPlacement.isVertical =
+      !this.#selectedShipPlacement.isVertical;
 
     this.#highlightShipPlacing();
   }
@@ -147,17 +156,17 @@ export default class Game {
   #onPlaceClick() {
     // add placement to array
     this.#shipPlacements[this.#selectedShip] = this.#selectedShipPlacement;
-    
+
     // remove ship div
     this.#shipElements[this.#selectedShip].classList.remove("selected");
     this.#shipElements[this.#selectedShip].classList.add("hide");
-    
+
     // disable place and rotate buttons
     this.#placeButton.disabled = true;
     this.#rotateButton.disabled = true;
-    
+
     // remove event listeners from cells and change occupied cells color
-    this.#playerCells.forEach(cell => {
+    this.#playerCells.forEach((cell) => {
       if (cell.classList.contains("ship-placing")) {
         cell.classList.remove("ship-placing");
         cell.classList.add("ship-placed");
@@ -168,20 +177,20 @@ export default class Game {
         this.#playerCellListeners.delete(cell);
       }
     });
-    
+
     // if last ship, remove placement buttons and enable and show start button
-    if (this.#shipPlacements.every(placement => placement !== null)) {
+    if (this.#shipPlacements.every((placement) => placement !== null)) {
       this.#shipsDiv.classList.add("hide");
       this.#startButton.disabled = false;
       this.#startButton.classList.remove("hide");
       this.#placeButton.classList.add("hide");
       this.#rotateButton.classList.add("hide");
     }
-    
+
     this.#selectedShipPlacement = null;
     this.#selectedShip = null;
   }
-  
+
   #onStartClick() {
     // create player from placements
     this.#player = new Player("Player", this.#shipPlacements);
@@ -193,7 +202,7 @@ export default class Game {
     this.#attackButton.classList.remove("hide");
 
     // add attack event listener to computer cells
-    this.#computerCells.forEach(cell => {
+    this.#computerCells.forEach((cell) => {
       const listener = this.#onCellAttackClick.bind(this);
       this.#computerCellListeners.set(cell, listener);
       cell.addEventListener("click", listener);
@@ -217,57 +226,69 @@ export default class Game {
       return;
     } else {
       // else if another cell is already clicked, clear the other cell and set the new variable
-      this.#computerCells[this.#attackedCell.y * 10 + this.#attackedCell.x].classList.remove("selected");
+      this.#computerCells[
+        this.#attackedCell.y * 10 + this.#attackedCell.x
+      ].classList.remove("selected");
       this.#attackedCell = { x, y };
       event.target.classList.add("selected");
     }
-    
+
     // enable attack button
     this.#attackButton.disabled = false;
   }
 
   #onAttackClick() {
     // remove event listener from cell
-    const cell = this.#computerCells[this.#attackedCell.y * 10 + this.#attackedCell.x];
+    const cell =
+      this.#computerCells[this.#attackedCell.y * 10 + this.#attackedCell.x];
     const listener = this.#computerCellListeners.get(cell);
     if (listener) {
       cell.removeEventListener("click", listener);
       this.#computerCellListeners.delete(cell);
     }
-    
+
     // disable attack button
     this.#attackButton.disabled = true;
-    
+
     // check if shot hits or misses and update the board
     cell.classList.remove("selected");
-    const result = this.#computer.receiveAttack(this.#attackedCell.x, this.#attackedCell.y);
-    if (result) {
+    const result = this.#computer.receiveAttack(
+      this.#attackedCell.x,
+      this.#attackedCell.y,
+    );
+    if (result === "miss") {
+      cell.classList.add("miss");
+    } else if (result === "hit") {
       cell.classList.add("hit");
     } else {
-      cell.classList.add("miss");
+      cell.classList.add("hit");
+      alert(`You sunk my ${this.#fleet[parseInt(result)].name}!`);
     }
-    
+
     this.#attackedCell = null;
-    
+
     // check if game is over
     if (this.#computer.allShipsSunk()) {
       // show winner
       alert("You win!");
       return;
     }
-    
+
     // if game is not over, call AI to attack
-    const attack = this.#ai.attack();
+    // const attack = this.#ai.dumbAttack();
+    const attack = this.#ai.smartAttack();
 
     // check if shot hits or misses and update the board
     const computerResult = this.#player.receiveAttack(attack.x, attack.y);
     const playerCell = this.#playerCells[attack.y * 10 + attack.x];
-    if (computerResult) {
+    if (computerResult == "miss") {
+      playerCell.classList.add("miss");
+    } else {
       playerCell.classList.remove("ship-placed");
       playerCell.classList.add("hit");
-    } else {
-      playerCell.classList.add("miss");
     }
+
+    this.#ai.update(computerResult);
 
     // check if game is over
     if (this.#player.allShipsSunk()) {
