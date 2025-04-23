@@ -24,6 +24,8 @@ export default class Game {
   #selectedShipPlacement;
   #placeButton;
   #rotateButton;
+  #clearButton;
+  #randomButton;
   #startButton;
   #attackButton;
   #playerCellListeners = new Map();
@@ -36,6 +38,8 @@ export default class Game {
     this.#shipsDiv = document.querySelector("#ships");
     this.#placeButton = document.querySelector("#place");
     this.#rotateButton = document.querySelector("#rotate");
+    this.#clearButton = document.querySelector("#clear");
+    this.#randomButton = document.querySelector("#random");
     this.#startButton = document.querySelector("#start");
     this.#attackButton = document.querySelector("#attack");
 
@@ -44,6 +48,8 @@ export default class Game {
       "click",
       this.#onRotateClick.bind(this),
     );
+    this.#clearButton.addEventListener("click", this.#onClearClick.bind(this));
+    this.#randomButton.addEventListener("click", this.#onRandomClick.bind(this));
     this.#startButton.addEventListener("click", this.#onStartClick.bind(this));
     this.#attackButton.addEventListener(
       "click",
@@ -191,13 +197,87 @@ export default class Game {
     this.#selectedShip = null;
   }
 
-  
+  #onClearClick() {
+    // clear ship placements
+    // remove ship placements from cells
+    this.#shipPlacements.forEach((placement) => {
+      if (placement) {
+        const x = placement.x;
+        const y = placement.y;
+        for (let i = 0; i < placement.size; i++) {
+          if (placement.isVertical) {
+            this.#playerCells[(y + i) * 10 + x].classList.remove(
+              "ship-placed"
+            );
+          } else {
+            this.#playerCells[y * 10 + x + i].classList.remove(
+              "ship-placed"
+            );
+          }
+        }
+      }
+    });
+    this.#shipPlacements.fill(null);
+
+    // if ship is selected, remove ship placement and unselect ship
+    if (this.#selectedShip) {
+      this.#selectedShip = null;
+      if (this.#selectedShipPlacement) {
+        this.#clearShipPlacing();
+        this.#selectedShipPlacement = null;
+      }
+    }
+    
+    // unhide ship elements
+    this.#shipElements.forEach((shipElement) => {
+      shipElement.classList.remove("hide", "selected");
+    });
+    this.#shipsDiv.classList.remove("hide");
+
+    // change buttons
+    this.#placeButton.classList.remove("hide");
+    this.#rotateButton.classList.remove("hide");
+    this.#startButton.classList.add("hide");
+    this.#placeButton.disabled = true;
+    this.#rotateButton.disabled = true;
+    this.#startButton.disabled = true;
+
+    // remove event listeners from cells
+    this.#playerCells.forEach((cell) => {
+      const listener = this.#playerCellListeners.get(cell);
+      if (listener) {
+        cell.removeEventListener("click", listener);
+        this.#playerCellListeners.delete(cell);
+      }
+    });
+  }
+
+  #onRandomClick() {
+    // clear board
+    this.#onClearClick();
+
+    // generate random placements
+    this.#shipPlacements = this.#ai.placeShips();
+
+    // place ships on board
+    this.#shipPlacements.forEach((placement, index) => {
+      this.#selectedShipPlacement = placement;
+      this.#selectedShip = index;
+      this.#highlightShipPlacing();
+      this.#onPlaceClick();
+    });
+  }
+
   #onStartClick() {
     // create player from placements
     this.#player = new Player("Player", this.#shipPlacements);
-    // hide start button and disable
+    // hide and disable buttons
     this.#startButton.classList.add("hide");
+    this.#clearButton.classList.add("hide");
+    this.#randomButton.classList.add("hide");
     this.#startButton.disabled = true;
+    this.#clearButton.disabled = true;
+    this.#randomButton.disabled = true;
     // render boards and ships and attack button
     this.#computerBoard.classList.remove("hide");
     this.#attackButton.classList.remove("hide");
