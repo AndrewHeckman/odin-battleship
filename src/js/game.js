@@ -49,12 +49,38 @@ export default class Game {
       this.#onRotateClick.bind(this),
     );
     this.#clearButton.addEventListener("click", this.#onClearClick.bind(this));
-    this.#randomButton.addEventListener("click", this.#onRandomClick.bind(this));
+    this.#randomButton.addEventListener(
+      "click",
+      this.#onRandomClick.bind(this),
+    );
     this.#startButton.addEventListener("click", this.#onStartClick.bind(this));
     this.#attackButton.addEventListener(
       "click",
       this.#onAttackClick.bind(this),
     );
+    document.addEventListener("keyup", (event) => {
+      if (event.key === "Enter") {
+        // if ship is selected, place it
+        // if cell is attacked, attack it
+        if (this.#selectedShipPlacement) {
+          this.#onPlaceClick();
+        } else if (this.#attackedCell) {
+          this.#onAttackClick();
+        }
+      } else if (event.key === "Escape") {
+        // if ship is selected, clear it
+        // if cell is attacked, clear it
+        if (this.#selectedShip) {
+          this.#onClearClick();
+        } else if (this.#attackedCell) {
+          this.#computerCells[
+            this.#attackedCell.y * 10 + this.#attackedCell.x
+          ].classList.remove("selected");
+          this.#attackedCell = null;
+          this.#attackButton.disabled = true;
+        }
+      }
+    });
 
     this.#placeButton.disabled = true;
     this.#rotateButton.disabled = true;
@@ -94,7 +120,6 @@ export default class Game {
     });
   }
 
-  // select ship
   #onShipClick(event) {
     // if another ship is selected, unselect it, remove ship placement, and show ship element
     if (this.#selectedShip) {
@@ -206,13 +231,9 @@ export default class Game {
         const y = placement.y;
         for (let i = 0; i < placement.size; i++) {
           if (placement.isVertical) {
-            this.#playerCells[(y + i) * 10 + x].classList.remove(
-              "ship-placed"
-            );
+            this.#playerCells[(y + i) * 10 + x].classList.remove("ship-placed");
           } else {
-            this.#playerCells[y * 10 + x + i].classList.remove(
-              "ship-placed"
-            );
+            this.#playerCells[y * 10 + x + i].classList.remove("ship-placed");
           }
         }
       }
@@ -227,7 +248,7 @@ export default class Game {
         this.#selectedShipPlacement = null;
       }
     }
-    
+
     // unhide ship elements
     this.#shipElements.forEach((shipElement) => {
       shipElement.classList.remove("hide", "selected");
