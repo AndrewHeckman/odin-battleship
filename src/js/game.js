@@ -181,6 +181,18 @@ export default class Game {
     this.#selectedShipPlacement.isVertical =
       !this.#selectedShipPlacement.isVertical;
 
+    // check if ship placement is valid
+    const x = this.#selectedShipPlacement.x;
+    const y = this.#selectedShipPlacement.y;
+    const size = this.#selectedShipPlacement.size;
+    const isVertical = this.#selectedShipPlacement.isVertical;
+
+    if (isVertical && y + size > 10) {
+      this.#selectedShipPlacement.y = 10 - size;
+    } else if (!isVertical && x + size > 10) {
+      this.#selectedShipPlacement.x = 10 - size;
+    }
+
     this.#highlightShipPlacing();
   }
 
@@ -319,10 +331,10 @@ export default class Game {
     // if cell is not clicked, mark it as clicked and set the variable
     if (!this.#attackedCell) {
       this.#attackedCell = { x, y };
-      event.target.classList.add("selected");
+      event.target.classList.add("targeted");
     } else if (this.#attackedCell.x === x && this.#attackedCell.y === y) {
       // else if this cell is already clicked, clear cell and variable
-      event.target.classList.remove("selected");
+      event.target.classList.remove("targeted");
       this.#attackedCell = null;
       this.#attackButton.disabled = true;
       return;
@@ -330,9 +342,9 @@ export default class Game {
       // else if another cell is already clicked, clear the other cell and set the new variable
       this.#computerCells[
         this.#attackedCell.y * 10 + this.#attackedCell.x
-      ].classList.remove("selected");
+      ].classList.remove("targeted");
       this.#attackedCell = { x, y };
-      event.target.classList.add("selected");
+      event.target.classList.add("targeted");
     }
 
     // enable attack button
@@ -353,7 +365,7 @@ export default class Game {
     this.#attackButton.disabled = true;
 
     // check if shot hits or misses and update the board
-    cell.classList.remove("selected");
+    cell.classList.remove("targeted");
     const result = this.#computer.receiveAttack(
       this.#attackedCell.x,
       this.#attackedCell.y,
@@ -371,13 +383,28 @@ export default class Game {
 
     // check if game is over
     if (this.#computer.allShipsSunk()) {
-      // show winner
-      alert("You win!");
+      if (!this.#player.allShipsSunk()) {
+        // show winner
+        alert("You win!");
+      }
+      // remove attack listeners
+      this.#computerCells.forEach((cell) => {
+        const listener = this.#computerCellListeners.get(cell);
+        if (listener) {
+          cell.removeEventListener("click", listener);
+          this.#computerCellListeners.delete(cell);
+        }
+      });
+      // remove attack button
+      this.#attackButton.classList.add("hide");
+      return;
+    }
+
+    if (this.#player.allShipsSunk()) {
       return;
     }
 
     // if game is not over, call AI to attack
-    // const attack = this.#ai.dumbAttack();
     const attack = this.#ai.smartAttack();
 
     // check if shot hits or misses and update the board
@@ -386,7 +413,7 @@ export default class Game {
     if (computerResult == "miss") {
       playerCell.classList.add("miss");
     } else {
-      playerCell.classList.remove("ship-placed");
+      // playerCell.classList.remove("ship-placed");
       playerCell.classList.add("hit");
     }
 

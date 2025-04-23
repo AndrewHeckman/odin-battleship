@@ -20,10 +20,13 @@
 
 :root {
   --cell-size: 3rem;
+  --background-color: #0e223b;
+  --text-color: #ff7b00;
+  --board-color: #2d4564;
   --hit-color: #ff0000;
-  --miss-color: #0000ff;
-  --ship-color: #00ff00;
-  --ship-placing-color: #ffff00;
+  --miss-color: white;
+  --ship-color: #a0a0a0;
+  --ship-placing-color: #ff7b00;
 }
 
 .flex {
@@ -39,15 +42,41 @@
 }
 
 .hit {
+  position: relative;
+}
+
+.hit::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--cell-size) / 2);
+  height: calc(var(--cell-size) / 2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
   background-color: var(--hit-color);
 }
 
 .miss {
+  position: relative;
+}
+
+.miss::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--cell-size) / 2);
+  height: calc(var(--cell-size) / 2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
   background-color: var(--miss-color);
 }
 
 .selected {
-  background-color: var(--ship-placing-color);
+  background-color: var(--ship-placing-color) !important;
 }
 
 .ship-placing {
@@ -58,13 +87,32 @@
   background-color: var(--ship-color);
 }
 
+.targeted {
+  position: relative;
+}
+
+.targeted::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--cell-size) / 2);
+  height: calc(var(--cell-size) / 2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  background-color: var(--ship-placing-color);
+}
+
 body {
   height: 100vh;
   justify-content: space-between;
+  background-color: var(--background-color);
 }
 
 h1 {
   text-align: center;
+  color: var(--text-color)
 }
 
 #game {
@@ -79,6 +127,7 @@ h1 {
   grid-template-rows: repeat(10, var(--cell-size));
   margin: auto;
   border: 1px solid #000;
+  background-color: var(--board-color);
 }
 
 .cell {
@@ -97,6 +146,9 @@ h1 {
 .ship {
   height: var(--cell-size);
   border: 1px solid #000;
+  background-color: var(--ship-color);
+  display: flex;
+  align-items: center;
 }
 
 #buttons {
@@ -104,4 +156,15 @@ h1 {
   margin: auto auto;
   justify-content: center;
   gap: calc(var(--cell-size) / 2);
+}
+
+button {
+  width: 8rem;
+  height: 8rem;
+  border: 2px solid #000;
+  border-radius: 4rem;
+  background-color: var(--hit-color);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
 }
