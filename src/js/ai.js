@@ -6,7 +6,7 @@ export default class AI {
   #targetMode = false;
   #targetedSquares = [];
   #sunkSquares = 0;
-  #maxLength;
+  #maxSize;
 
   /**
    * Make a new AI instance based on a set of ships.
@@ -15,16 +15,16 @@ export default class AI {
   constructor(ships) {
     if (!ships || ships.length === 0) {
       ships = [
-        { id: 0, length: 5 },
-        { id: 1, length: 4 },
-        { id: 2, length: 3 },
-        { id: 3, length: 3 },
-        { id: 4, length: 2 },
+        { id: 0, size: 5 },
+        { id: 1, size: 4 },
+        { id: 2, size: 3 },
+        { id: 3, size: 3 },
+        { id: 4, size: 2 },
       ];
     }
     this.#ships = [...ships];
 
-    this.#maxLength = Math.max(...ships.map((ship) => ship.length));
+    this.#maxSize = Math.max(...ships.map((ship) => ship.size));
 
     this.#initializePdf();
   }
@@ -35,7 +35,7 @@ export default class AI {
    * x: number,
    * y: number,
    * isVertical: boolean,
-   * length: number
+   * size: number
    * }>} Array of ship placements.
    */
   placeShips() {
@@ -51,15 +51,15 @@ export default class AI {
 
       // Ensure the ship fits within the board and does not overlap with other ships
       while (
-        !this.#checkPlacement(placementBoard, { x, y, isVertical, length: ship.length })
+        !this.#checkPlacement(placementBoard, { x, y, isVertical, size: ship.size })
       ) {
         x = Math.floor(Math.random() * 10);
         y = Math.floor(Math.random() * 10);
         isVertical = Math.random() < 0.5;
       }
 
-      placements.push({ x, y, isVertical, length: ship.length });
-      for (let i = 0; i < ship.length; i++) {
+      placements.push({ x, y, isVertical, size: ship.size });
+      for (let i = 0; i < ship.size; i++) {
         if (isVertical) {
           placementBoard[y + i][x] = false;
         } else {
@@ -117,7 +117,7 @@ export default class AI {
   /**
    * Updates the ai board with the result of the attack.
    * @param {Boolean} hit True if the attack hit a ship, false if it missed.
-   * @param {Number} sunk Length of the sunk ship, or null if no ship was sunk.
+   * @param {Number} sunk Size of the sunk ship, or null if no ship was sunk.
    */
   update(result) {
     const { x, y } = this.#lastAttack;
@@ -135,7 +135,7 @@ export default class AI {
       const sunkShip = this.#ships.find((ship) => ship.id === shipId);
 
       if (sunkShip) {
-        this.#sunkSquares += sunkShip.length;
+        this.#sunkSquares += sunkShip.size;
         this.#ships = this.#ships.filter((ship) => ship.id !== shipId);
 
         if (this.#targetedSquares.length <= this.#sunkSquares) {
@@ -146,9 +146,9 @@ export default class AI {
       }
 
       if (this.#ships.length > 0) {
-        this.#maxLength = Math.max(...this.#ships.map((ship) => ship.length));
+        this.#maxSize = Math.max(...this.#ships.map((ship) => ship.size));
       } else {
-        this.#maxLength = 0;
+        this.#maxSize = 0;
         return;
       }
     }
@@ -156,7 +156,7 @@ export default class AI {
     this.#pdf = Array.from({ length: 10 }, () => Array(10).fill(0));
     this.#calculatePdf();
 
-    if (this.#targetMode && this.#maxLength > 0) {
+    if (this.#targetMode && this.#maxSize > 0) {
       this.#calculateTargeting();
     }
   }
@@ -167,14 +167,14 @@ export default class AI {
         const x = i % 10;
         const y = Math.floor(i / 10);
 
-        if (ship.length + x <= 10) {
-          for (let j = 0; j < ship.length; j++) {
+        if (ship.size + x <= 10) {
+          for (let j = 0; j < ship.size; j++) {
             this.#pdf[y][x + j]++;
           }
         }
 
-        if (ship.length + y <= 10) {
-          for (let j = 0; j < ship.length; j++) {
+        if (ship.size + y <= 10) {
+          for (let j = 0; j < ship.size; j++) {
             this.#pdf[y + j][x]++;
           }
         }
@@ -185,17 +185,17 @@ export default class AI {
   #calculatePdf() {
     this.#ships.forEach((ship) => {
       for (let y = 0; y < 10; y++) {
-        for (let x = 0; x <= 10 - ship.length; x++) {
+        for (let x = 0; x <= 10 - ship.size; x++) {
           let valid = true;
 
-          for (let i = 0; i < ship.length; i++) {
+          for (let i = 0; i < ship.size; i++) {
             if (this.#board[y][x + i].hit !== null) {
               valid = false;
               break;
             }
           }
           if (valid) {
-            for (let i = 0; i < ship.length; i++) {
+            for (let i = 0; i < ship.size; i++) {
               this.#pdf[y][x + i]++;
             }
           }
@@ -203,17 +203,17 @@ export default class AI {
       }
 
       for (let x = 0; x < 10; x++) {
-        for (let y = 0; y <= 10 - ship.length; y++) {
+        for (let y = 0; y <= 10 - ship.size; y++) {
           let valid = true;
 
-          for (let i = 0; i < ship.length; i++) {
+          for (let i = 0; i < ship.size; i++) {
             if (this.#board[y + i][x].hit !== null) {
               valid = false;
               break;
             }
           }
           if (valid) {
-            for (let i = 0; i < ship.length; i++) {
+            for (let i = 0; i < ship.size; i++) {
               this.#pdf[y + i][x]++;
             }
           }
@@ -223,12 +223,12 @@ export default class AI {
   }
 
   #calculateTargeting() {
-    // check all squares in the same row and column within max ship length of a hit square
+    // check all squares in the same row and column within max ship size of a hit square
     this.#targetedSquares.forEach((square) => {
       const {x, y} = square;
 
       // Check right
-      for (let i = 1; i < this.#maxLength && x + i < 10; i++) {
+      for (let i = 1; i < this.#maxSize && x + i < 10; i++) {
         if (this.#board[y][x + i].hit === null) {
           this.#pdf[y][x + i] += 50;
         } else if (this.#board[y][x + i].hit === false) {
@@ -237,7 +237,7 @@ export default class AI {
       }
       
       // Check left
-      for (let i = 1; i < this.#maxLength && x - i >= 0; i++) {
+      for (let i = 1; i < this.#maxSize && x - i >= 0; i++) {
         if (this.#board[y][x - i].hit === null) {
           this.#pdf[y][x - i] += 50;
         } else if (this.#board[y][x - i].hit === false) {
@@ -246,7 +246,7 @@ export default class AI {
       }
       
       // Check down
-      for (let i = 1; i < this.#maxLength && y + i < 10; i++) {
+      for (let i = 1; i < this.#maxSize && y + i < 10; i++) {
         if (this.#board[y + i][x].hit === null) {
           this.#pdf[y + i][x] += 50;
         } else if (this.#board[y + i][x].hit === false) {
@@ -255,7 +255,7 @@ export default class AI {
       }
       
       // Check up
-      for (let i = 1; i < this.#maxLength && y - i >= 0; i++) {
+      for (let i = 1; i < this.#maxSize && y - i >= 0; i++) {
         if (this.#board[y - i][x].hit === null) {
           this.#pdf[y - i][x] += 50;
         } else if (this.#board[y - i][x].hit === false) {
@@ -266,16 +266,16 @@ export default class AI {
   }
 
   #checkPlacement(placementBoard, placement) {
-    const { x, y, isVertical, length } = placement;
+    const { x, y, isVertical, size } = placement;
 
     if (isVertical) {
-      if (y + length > 10) return false;
-      for (let i = 0; i < length; i++) {
+      if (y + size > 10) return false;
+      for (let i = 0; i < size; i++) {
         if (!placementBoard[y + i][x]) return false;
       }
     } else {
-      if (x + length > 10) return false;
-      for (let i = 0; i < length; i++) {
+      if (x + size > 10) return false;
+      for (let i = 0; i < size; i++) {
         if (!placementBoard[y][x + i]) return false;
       }
     }

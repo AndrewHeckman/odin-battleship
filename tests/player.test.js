@@ -5,11 +5,11 @@ describe("Player", () => {
 
   beforeEach(() => {
     player = new Player("Player 1", [
-      { x: 0, y: 0, isVertical: false, length: 5 },
-      { x: 0, y: 1, isVertical: false, length: 4 },
-      { x: 0, y: 2, isVertical: false, length: 3 },
-      { x: 0, y: 3, isVertical: false, length: 3 },
-      { x: 0, y: 4, isVertical: false, length: 2 },
+      { x: 0, y: 0, isVertical: false, size: 5 },
+      { x: 0, y: 1, isVertical: false, size: 4 },
+      { x: 0, y: 2, isVertical: false, size: 3 },
+      { x: 0, y: 3, isVertical: false, size: 3 },
+      { x: 0, y: 4, isVertical: false, size: 2 },
     ]);
   });
 

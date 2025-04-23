@@ -1,10 +1,10 @@
 export default class Ship {
-  #length;
+  #size;
   #hits = 0;
   #sunk = false;
 
-  constructor(length) {
-    this.#length = length;
+  constructor(size) {
+    this.#size = size;
   }
 
   /**
@@ -20,11 +20,11 @@ export default class Ship {
   
   /**
    * Check if the ship is sunk.
-   * A ship is considered sunk if the number of hits is equal to or greater than its length.
+   * A ship is considered sunk if the number of hits is equal to or greater than its size.
    * @returns {boolean} True if the ship is sunk, false otherwise.
    */
   isSunk() {
-    if (this.#hits >= this.#length) {
+    if (this.#hits >= this.#size) {
       this.#sunk = true;
     }
 
@@ -35,7 +35,7 @@ export default class Ship {
    * @type {number}
    * @readonly
    */
-  get length() {
-    return this.#length;
+  get size() {
+    return this.#size;
   }
 }

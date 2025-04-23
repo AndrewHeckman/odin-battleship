@@ -24,11 +24,11 @@ describe("Gameboard", () => {
 
   beforeEach(() => {
     gameboard = new Gameboard([
-      { x: 0, y: 0, isVertical: false, length: 5 },
-      { x: 0, y: 1, isVertical: false, length: 4 },
-      { x: 0, y: 2, isVertical: false, length: 3 },
-      { x: 0, y: 3, isVertical: false, length: 3 },
-      { x: 0, y: 4, isVertical: false, length: 2 },
+      { x: 0, y: 0, isVertical: false, size: 5 },
+      { x: 0, y: 1, isVertical: false, size: 4 },
+      { x: 0, y: 2, isVertical: false, size: 3 },
+      { x: 0, y: 3, isVertical: false, size: 3 },
+      { x: 0, y: 4, isVertical: false, size: 2 },
     ]);
   });
 
@@ -55,27 +55,27 @@ describe("Gameboard", () => {
     // invalid placements should throw errors
     test("should throw an error when ship placements are invalid", () => {
       expect(() => {
-        new Gameboard([{ x: 0, y: 6, isVertical: true, length: 5 }]);
+        new Gameboard([{ x: 0, y: 6, isVertical: true, size: 5 }]);
       }).toThrow("Ship cannot be placed outside the board");
       expect(() => {
-        new Gameboard([{ x: 0, y: 11, isVertical: true, length: 5 }]);
+        new Gameboard([{ x: 0, y: 11, isVertical: true, size: 5 }]);
       }).toThrow("Ship cannot be placed outside the board");
       expect(() => {
-        new Gameboard([{ x: 6, y: 0, isVertical: false, length: 5 }]);
+        new Gameboard([{ x: 6, y: 0, isVertical: false, size: 5 }]);
       }).toThrow("Ship cannot be placed outside the board");
       expect(() => {
-        new Gameboard([{ x: 11, y: 0, isVertical: false, length: 5 }]);
+        new Gameboard([{ x: 11, y: 0, isVertical: false, size: 5 }]);
       }).toThrow("Ship cannot be placed outside the board");
       expect(() => {
         new Gameboard([
-          { x: 0, y: 0, isVertical: true, length: 5 },
-          { x: 0, y: 0, isVertical: true, length: 4 },
+          { x: 0, y: 0, isVertical: true, size: 5 },
+          { x: 0, y: 0, isVertical: true, size: 4 },
         ]);
       }).toThrow("Ship cannot be placed on top of another ship");
       expect(() => {
         new Gameboard([
-          { x: 0, y: 0, isVertical: false, length: 5 },
-          { x: 0, y: 0, isVertical: false, length: 4 },
+          { x: 0, y: 0, isVertical: false, size: 5 },
+          { x: 0, y: 0, isVertical: false, size: 4 },
         ]);
       }).toThrow("Ship cannot be placed on top of another ship");
     });

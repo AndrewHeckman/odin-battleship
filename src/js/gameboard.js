@@ -22,13 +22,13 @@ export default class Gameboard {
    * x: number,
    * y: number,
    * isVertical: boolean,
-   * length: number
+   * size: number
    * }>} placements Array of ship placements.
    */
   constructor(placements) {
     // Initialize the board with ship placements
-    placements.forEach(({ x, y, isVertical, length }) => {
-      const ship = new Ship(length);
+    placements.forEach(({ x, y, isVertical, size }) => {
+      const ship = new Ship(size);
       this.#ships.push(ship);
       this.#placeShip(x, y, isVertical, this.#ships.length - 1);
     });
@@ -43,23 +43,23 @@ export default class Gameboard {
    * @throws {Error} If the ship cannot be placed at the specified coordinates.
    */
   #placeShip(x, y, isVertical, shipIndex) {
-    const length = this.#ships[shipIndex].length;
+    const size = this.#ships[shipIndex].size;
 
     if (isVertical) {
-      if (y + length > 10) {
+      if (y + size > 10) {
         throw new Error("Ship cannot be placed outside the board");
       }
-      for (let i = 0; i < length; i++) {
+      for (let i = 0; i < size; i++) {
         if (this.#board[y + i][x].ship !== null) {
           throw new Error("Ship cannot be placed on top of another ship");
         }
         this.#board[y + i][x] = { ship: shipIndex, hit: false };
       }
     } else {
-      if (x + length > 10) {
+      if (x + size > 10) {
         throw new Error("Ship cannot be placed outside the board");
       }
-      for (let i = 0; i < length; i++) {
+      for (let i = 0; i < size; i++) {
         if (this.#board[y][x + i].ship !== null) {
           throw new Error("Ship cannot be placed on top of another ship");
         }

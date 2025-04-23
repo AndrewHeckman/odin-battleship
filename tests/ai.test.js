@@ -5,11 +5,11 @@ describe("AI", () => {
   let ai;
   let gameboard;
   const ships = [
-    { id: 0, length: 5 },
-    { id: 1, length: 4 },
-    { id: 2, length: 3 },
-    { id: 3, length: 3 },
-    { id: 4, length: 2 },
+    { id: 0, size: 5 },
+    { id: 1, size: 4 },
+    { id: 2, size: 3 },
+    { id: 3, size: 3 },
+    { id: 4, size: 2 },
   ];
 
   beforeEach(() => {

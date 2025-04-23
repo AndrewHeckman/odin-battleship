@@ -3,11 +3,11 @@ import AI from "./ai";
 
 export default class Game {
   #fleet = [
-    { id: 0, name: "Carrier", length: 5 },
-    { id: 1, name: "Battleship", length: 4 },
-    { id: 2, name: "Destroyer", length: 3 },
-    { id: 3, name: "Submarine", length: 3 },
-    { id: 4, name: "Patrol Boat", length: 2 },
+    { id: 0, name: "Carrier", size: 5 },
+    { id: 1, name: "Battleship", size: 4 },
+    { id: 2, name: "Destroyer", size: 3 },
+    { id: 3, name: "Submarine", size: 3 },
+    { id: 4, name: "Patrol Boat", size: 2 },
   ];
   #ai = new AI(this.#fleet);
   #player;
@@ -81,7 +81,7 @@ export default class Game {
       shipElement.classList.add("ship");
       shipElement.dataset.ship = ship.id;
       shipElement.innerText = ship.name;
-      shipElement.style.width = `calc(${ship.length} * var(--cell-size))`;
+      shipElement.style.width = `calc(${ship.size} * var(--cell-size))`;
       this.#shipsDiv.appendChild(shipElement);
       this.#shipElements.push(shipElement);
       shipElement.addEventListener("click", this.#onShipClick.bind(this));
@@ -118,12 +118,12 @@ export default class Game {
     const cell = event.target.dataset.cell;
     const x = cell % 10;
     const y = Math.floor(cell / 10);
-    const length = this.#fleet[this.#selectedShip].length;
+    const size = this.#fleet[this.#selectedShip].size;
     const isVertical = this.#selectedShipPlacement
       ? this.#selectedShipPlacement.isVertical
       : false;
 
-    if ((isVertical && y + length > 10) || (!isVertical && x + length > 10)) {
+    if ((isVertical && y + size > 10) || (!isVertical && x + size > 10)) {
       return;
     }
 
@@ -135,7 +135,7 @@ export default class Game {
       x,
       y,
       isVertical,
-      length,
+      size,
     };
 
     this.#highlightShipPlacing();
@@ -191,6 +191,7 @@ export default class Game {
     this.#selectedShip = null;
   }
 
+  
   #onStartClick() {
     // create player from placements
     this.#player = new Player("Player", this.#shipPlacements);
@@ -301,7 +302,7 @@ export default class Game {
   #clearShipPlacing() {
     const x = this.#selectedShipPlacement.x;
     const y = this.#selectedShipPlacement.y;
-    for (let i = 0; i < this.#selectedShipPlacement.length; i++) {
+    for (let i = 0; i < this.#selectedShipPlacement.size; i++) {
       if (this.#selectedShipPlacement.isVertical) {
         this.#playerCells[(y + i) * 10 + x].classList.remove("ship-placing");
       } else {
@@ -313,7 +314,7 @@ export default class Game {
   #highlightShipPlacing() {
     const x = this.#selectedShipPlacement.x;
     const y = this.#selectedShipPlacement.y;
-    for (let i = 0; i < this.#selectedShipPlacement.length; i++) {
+    for (let i = 0; i < this.#selectedShipPlacement.size; i++) {
       if (this.#selectedShipPlacement.isVertical) {
         this.#playerCells[(y + i) * 10 + x].classList.add("ship-placing");
       } else {
